@@ -66,13 +66,13 @@ class LabelEncoder:
         raise Exception('You should do fit_transform first!')
 
 
-def most_correlated_features(df, threshold):
+def most_correlated_features(df: pd.DataFrame, threshold: float):
     cor_matrix = df.corr().abs()
     upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape), k=1).astype(np.bool))
     return [column for column in upper_tri.columns if any(upper_tri[column] > threshold)]
 
 
-def make_corr_heatmap(dataset):
+def make_corr_heatmap(dataset: pd.DataFrame):
     corr = dataset.corr()
     plt.figure(figsize=(20, 18))
     sns.heatmap(corr,
@@ -80,6 +80,13 @@ def make_corr_heatmap(dataset):
                 yticklabels=corr.columns, annot=True)
     plt.tight_layout()
     plt.savefig('imgs/corr_plot.png')
+    plt.close()
+
+
+def make_count_plot(df: pd.DataFrame, df_col: pd.Series):
+    sns.countplot(x=df_col, data=df)
+    plt.tight_layout()
+    plt.savefig('imgs/count_plot_labels.png')
     plt.close()
 
 

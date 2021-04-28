@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from src.tools import LabelEncoder, parse_args_preprocess, most_correlated_features, make_corr_heatmap, save
+from src.tools import LabelEncoder, parse_args_preprocess, most_correlated_features, make_corr_heatmap, \
+    make_count_plot, save
 
 if __name__ == '__main__':
     args = parse_args_preprocess()
@@ -9,6 +10,9 @@ if __name__ == '__main__':
     encoder = LabelEncoder()
 
     dataset = pd.DataFrame(data=dataset.to_numpy(), columns=[str(i + 1) for i in range(dataset.shape[1])])
+
+    make_count_plot(dataset, dataset['2'])
+
     labels = encoder.fit_transform(dataset['2'])
     dataset.drop(columns=['2'], inplace=True, axis=1)
     dataset = dataset.astype(np.float64)
