@@ -94,15 +94,17 @@ def parse_args_preprocess():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='data/data.csv')
     parser.add_argument('--seed', default=42)
+    parser.add_argument('--test_size', default=0.33)
     args = parser.parse_args()
     return args.__dict__
 
 
 def parse_args_train():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train_df_path', default='tmp/train.pkl')
     parser.add_argument('--save_model_path', default='tmp/model.pkl')
     parser.add_argument('--seed', default=42)
+    parser.add_argument('--epochs', default=100)
+    parser.add_argument('--batchsize', default=32)
     args = parser.parse_args()
     return args.__dict__
 

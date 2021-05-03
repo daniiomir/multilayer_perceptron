@@ -31,9 +31,15 @@ if __name__ == '__main__':
 
     y = dataset['labels']
     x = dataset.drop(columns=['labels'], axis=1)
-    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=args['seed'])
+
+    X_train_full, X_test, y_train_full, y_test = train_test_split(x, y, test_size=args['test_size'],
+                                                                  random_state=args['seed'])
+
+    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=args['test_size'],
+                                                      random_state=args['seed'])
 
     save((X_train, y_train), 'tmp/train.pkl')
+    save((X_val, y_val), 'tmp/val.pkl')
     save((X_test, y_test), 'tmp/test.pkl')
     save(encoder, 'tmp/encoder.pkl')
 
