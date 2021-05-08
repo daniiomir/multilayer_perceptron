@@ -12,7 +12,7 @@ class ReLU(Layer):
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         relu_grad = input > 0
-        return grad_output * relu_grad
+        return grad_output * relu_grad.astype(int)
 
 
 class Tanh(Layer):
@@ -43,8 +43,10 @@ class SoftMax(Layer):
         super().__init__()
 
     def forward(self, input: np.ndarray) -> np.ndarray:
-        e_x = np.exp(input - np.max(input))
-        return e_x / e_x.sum(axis=0)
+        assert len(input.shape) == 2
+        e_x = np.exp(input - np.max(input, axis=1)[:, np.newaxis])
+        div = np.sum(e_x, axis=1)[:, np.newaxis]
+        return e_x / div
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         p = self.forward(input)

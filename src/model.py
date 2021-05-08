@@ -1,5 +1,6 @@
 import gc
 import numpy as np
+from src.tools import save, load
 
 
 class Model:
@@ -9,6 +10,10 @@ class Model:
 
     def __len__(self):
         return len(self.network)
+
+    @property
+    def params(self):
+        return [i for i in self.network if i.require_grad is True]
 
     def add_layer(self, layer):
         self.network.append(layer)
@@ -36,8 +41,18 @@ class Model:
                 layer.biases_grad = None
             gc.collect()
 
-    @property
-    def params(self):
-        return [i for i in self.network if i.require_grad is True]
+    def save_weights(self, path: str = 'tmp/weights.pkl'):
+        weights_list = []
+        for layer in self.params:
+            weights_list.append((layer.weights, layer.biases))
+        save(weights_list, path)
 
-    # TODO : добавить методы сохранения и подгрузки весов
+    def load_weights(self, path: str = 'tmp/weights.pkl'):
+        weights_list = load(path)
+        if isinstance(weights_list, list):
+            assert len(weights_list) == len(self.params)
+            for index, layer in enumerate(self.params):
+                layer.weights = weights_list[index][0]
+                layer.biases = weights_list[index][1]
+        else:
+            raise Exception('No weights in file!')

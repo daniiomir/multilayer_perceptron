@@ -90,6 +90,17 @@ def make_count_plot(df: pd.DataFrame, df_col: pd.Series) -> None:
     plt.close()
 
 
+def make_learning_curves(train_list, val_list, name):
+    plt.plot(np.arange(len(train_list)), train_list, color='blue', label='train')
+    plt.plot(np.arange(len(val_list)), val_list, color='red', label='val')
+    plt.legend(loc='best')
+    plt.title(f'Development of {name.capitalize()} during training')
+    plt.xlabel('Number of iterations')
+    plt.ylabel(name.capitalize())
+    plt.savefig(f'imgs/{name}.png')
+    plt.close()
+
+
 def parse_args_preprocess() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='data/data.csv')
@@ -103,7 +114,7 @@ def parse_args_train() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_model_path', default='tmp/model.pkl')
     parser.add_argument('--seed', default=42)
-    parser.add_argument('--epochs', default=100)
+    parser.add_argument('--epochs', default=30)
     parser.add_argument('--batchsize', default=32)
     args = parser.parse_args()
     return args.__dict__
