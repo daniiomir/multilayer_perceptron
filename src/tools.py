@@ -66,13 +66,13 @@ class LabelEncoder:
         raise Exception('You should do fit_transform first!')
 
 
-def most_correlated_features(df: pd.DataFrame, threshold: float):
+def most_correlated_features(df: pd.DataFrame, threshold: float) -> list:
     cor_matrix = df.corr().abs()
     upper_tri = cor_matrix.where(np.triu(np.ones(cor_matrix.shape), k=1).astype(np.bool))
     return [column for column in upper_tri.columns if any(upper_tri[column] > threshold)]
 
 
-def make_corr_heatmap(dataset: pd.DataFrame):
+def make_corr_heatmap(dataset: pd.DataFrame) -> None:
     corr = dataset.corr()
     plt.figure(figsize=(20, 18))
     sns.heatmap(corr,
@@ -83,14 +83,14 @@ def make_corr_heatmap(dataset: pd.DataFrame):
     plt.close()
 
 
-def make_count_plot(df: pd.DataFrame, df_col: pd.Series):
+def make_count_plot(df: pd.DataFrame, df_col: pd.Series) -> None:
     sns.countplot(x=df_col, data=df)
     plt.tight_layout()
     plt.savefig('imgs/count_plot_labels.png')
     plt.close()
 
 
-def parse_args_preprocess():
+def parse_args_preprocess() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_path', default='data/data.csv')
     parser.add_argument('--seed', default=42)
@@ -99,7 +99,7 @@ def parse_args_preprocess():
     return args.__dict__
 
 
-def parse_args_train():
+def parse_args_train() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_model_path', default='tmp/model.pkl')
     parser.add_argument('--seed', default=42)
@@ -109,7 +109,7 @@ def parse_args_train():
     return args.__dict__
 
 
-def parse_args_test():
+def parse_args_test() -> dict:
     parser = argparse.ArgumentParser()
     parser.add_argument('--test_df_path', default='tmp/test.pkl')
     parser.add_argument('--load_model_path', default='tmp/model.pkl')
@@ -117,7 +117,7 @@ def parse_args_test():
     return args.__dict__
 
 
-def save(obj: object, path: str):
+def save(obj: object, path: str) -> None:
     with open(path, 'wb') as f:
         pickle.dump(obj, f, protocol=4)
 
