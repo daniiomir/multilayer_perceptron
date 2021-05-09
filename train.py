@@ -1,7 +1,7 @@
 import numpy as np
 from src.tools import parse_args_train, load, make_learning_curves
 from src.nn_tools import seed_everything, init_weights, dataloader, clip_gradients
-from src.layers import Dense
+from src.layers import Dense, Dropout
 from src.losses import BinaryCrossEntropyLoss, CrossEntropyLoss
 from src.activations import ReLU, Tanh, Sigmoid, SoftMax
 from src.optimizers import SGD, Momentum, RMSProp, Adam
@@ -16,10 +16,13 @@ if __name__ == '__main__':
 
     model = Model()
     model.add_layer(Dense(X_train.shape[1], 100))
+    model.add_layer(Dropout(p=0.5))
     model.add_layer(ReLU())
     model.add_layer(Dense(100, 200))
+    model.add_layer(Dropout(p=0.5))
     model.add_layer(ReLU())
     model.add_layer(Dense(200, 50))
+    # model.add_layer(Dropout(p=0.5))
     model.add_layer(ReLU())
     model.add_layer(Dense(50, 2))
 
@@ -27,10 +30,10 @@ if __name__ == '__main__':
 
     criterion = CrossEntropyLoss()
     optimizer = Momentum(model.params, 1e-4)
-    # optimizer = Adam(model.params, 1e-6)
+    # optimizer = RMSProp(model.params, 1e-5)
+
     train_acc_by_epoch = []
     val_acc_by_epoch = []
-
     train_loss_by_epoch = []
     val_loss_by_epoch = []
 
@@ -40,9 +43,10 @@ if __name__ == '__main__':
         train_acc_by_batch = []
         val_acc_by_batch = []
 
+        model.train_mode()
         for x_batch, y_batch in dataloader(X_train.to_numpy(), y_train.to_numpy(), batchsize=args['batchsize'],
                                            shuffle=True):
-            preds = model.forward(x_batch, mode='train')
+            preds = model.forward(x_batch)
             loss = criterion(y_batch, preds)
             acc = np.mean(np.argmax(preds, axis=1) == y_batch)
             train_loss_by_batch.append(loss)
@@ -52,6 +56,7 @@ if __name__ == '__main__':
             optimizer.step(epoch + 1)
             model.clear_cache()
 
+        model.test_mode()
         for x_batch_val, y_batch_val in dataloader(X_val.to_numpy(), y_val.to_numpy(), batchsize=args['batchsize'],
                                            shuffle=True):
             preds = model.forward(x_batch_val)
@@ -73,5 +78,6 @@ if __name__ == '__main__':
 
     make_learning_curves(train_loss_by_epoch, val_loss_by_epoch, name='loss')
     make_learning_curves(train_acc_by_epoch, val_acc_by_epoch, name='accuracy')
-    print(f'Best max val accuracy - {max(val_acc_by_epoch)}')
+    print(f'Best max val accuracy - {max(val_acc_by_epoch)} '
+          f'on iteration {val_acc_by_epoch.index(max(val_acc_by_epoch)) + 1}')
     print('Training finished.')

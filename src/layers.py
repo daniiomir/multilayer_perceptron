@@ -20,11 +20,8 @@ class Layer:
         d loss / dx  = (d loss / d layer) * (d layer / dx)
         Luckily, we already receive d loss / d layer as input, so you only need to multiply it by d layer / d x.
         If our layer has parameters (e.g. dense layer), we also need to update them here using d loss / d layer
-        The gradient of a dummy layer is precisely grad_output, but we'll write it more explicitly
         """
-        num_units = input.shape[1]
-        d_layer_d_input = np.eye(num_units)
-        return np.dot(grad_output, d_layer_d_input)
+        raise NotImplementedError
 
 
 class Dense(Layer):
@@ -53,4 +50,22 @@ class Dense(Layer):
         assert self.weights_grad.shape == self.weights.shape and self.biases_grad.shape == self.biases.shape
         return grad_input
 
-# TODO : добавить сверточный слой, MaxPooling, Dropout, BatchNorm
+
+class Dropout(Layer):
+    """
+    "Dropout:  A Simple Way to Prevent Neural Networks from Overfitting"
+    https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf
+    """
+    def __init__(self, p=0.5):
+        super().__init__()
+        self.p = p
+        self.mask = None
+
+    def forward(self, input: np.ndarray) -> np.ndarray:
+        self.mask = np.random.binomial(1, self.p, input.shape) / self.p
+        return input * self.mask
+
+    def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
+        return grad_output * self.mask
+
+# TODO : добавить сверточный слой, MaxPooling, BatchNorm

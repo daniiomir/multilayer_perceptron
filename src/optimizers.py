@@ -19,8 +19,8 @@ class SGD(Optimizer):
 
     def step(self, iter_num):
         for layer in self.model_params:
-            layer.weights += self.learning_rate * (layer.weights_grad + self.weight_decay * layer.weights)
-            layer.biases += self.learning_rate * (layer.biases_grad + self.weight_decay * layer.biases)
+            layer.weights += self.learning_rate * layer.weights_grad + self.weight_decay * layer.weights
+            layer.biases += self.learning_rate * layer.biases_grad + self.weight_decay * layer.biases
 
 
 class Momentum(Optimizer):
@@ -65,10 +65,10 @@ class RMSProp(Optimizer):
 
 
 class Adam(Optimizer):
-    '''
-    "ADAM: A METHOD  FOR STOCHASTIC OPTIMIZATION"
+    """
+    "ADAM: A METHOD FOR STOCHASTIC OPTIMIZATION"
     https://arxiv.org/pdf/1412.6980.pdf
-    '''
+    """
     def __init__(self, params, learning_rate, betas=(0.9, 0.999), eps=1e-8):
         super().__init__(params, learning_rate)
         self.model_params = params

@@ -1,12 +1,14 @@
 import gc
 import numpy as np
 from src.tools import save, load
+from src.layers import Dropout
 
 
 class Model:
     def __init__(self):
         self.network = []
         self.forward_list = []
+        self.trainable = True
 
     def __len__(self):
         return len(self.network)
@@ -15,16 +17,25 @@ class Model:
     def params(self):
         return [i for i in self.network if i.require_grad is True]
 
+    def train_mode(self):
+        self.trainable = True
+
+    def test_mode(self):
+        self.trainable = False
+
     def add_layer(self, layer):
         self.network.append(layer)
 
-    def forward(self, input: np.ndarray, mode='test', collect_garbage=False):
+    def forward(self, input: np.ndarray, collect_garbage=False):
         self.forward_list.append(input)
         for layer in self.network:
+            if isinstance(layer, Dropout) and not self.trainable:
+                continue
             self.forward_list.append(layer.forward(self.forward_list[-1]))
-        assert len(self.forward_list) == len(self.network) + 1
+        if self.trainable:
+            assert len(self.forward_list) == len(self.network) + 1
         pred = self.forward_list[-1]
-        if mode == 'test':
+        if not self.trainable:
             self.clear_cache(collect_garbage)
         return pred
 
