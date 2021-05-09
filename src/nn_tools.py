@@ -29,8 +29,14 @@ def init_weights(params: list, method: str = 'xavier_normal') -> None:
         elif method == 'normal':
             layer.weights = np.random.normal(loc=0., scale=1., size=layer.shape)
         elif method == 'xavier_normal':
-            layer.weights = (1. / np.sqrt(layer.shape[0])) * np.random.normal(loc=0., scale=1., size=layer.shape)
+            layer.weights = np.random.normal(loc=0., scale=(np.sqrt(layer.shape[0])), size=layer.shape)
         elif method == 'kaiming_normal':
-            layer.weights = (1. / np.sqrt(layer.shape[0] / 2)) * np.random.normal(loc=0., scale=1., size=layer.shape)
+            layer.weights = np.random.normal(loc=0., scale=(np.sqrt(2 / layer.shape[0])), size=layer.shape)
         else:
             raise NotImplementedError
+
+
+def clip_gradients(params: list, grad_clip: int = 3):
+    for layer in params:
+        layer.weights_grad = np.clip(layer.weights_grad, -grad_clip, grad_clip)
+        layer.biases_grad = np.clip(layer.biases_grad, -grad_clip, grad_clip)
