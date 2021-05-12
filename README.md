@@ -32,10 +32,14 @@
 * EarlyStopping
 
 ## Установка
-...
+>python3.8 -m venv env  
+>. ./env/activate  
+>pip install -r requirements.txt  
 
-## Использованная математика
-...
+## Запуск
+>python preprocess.py  
+>python train.py  
+>python predict.py  
 
 ## Использованные библиотеки
 numpy>=1.20.1  
