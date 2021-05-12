@@ -115,14 +115,17 @@ def parse_args_train() -> dict:
     parser.add_argument('--seed', default=42)
     parser.add_argument('--epochs', default=1000)
     parser.add_argument('--batchsize', default=32)
+    parser.add_argument('--save_weights_path', default='tmp/weights.pkl')
+    parser.add_argument('--train_data_path', default='tmp/train.pkl')
+    parser.add_argument('--val_data_path', default='tmp/val.pkl')
     args = parser.parse_args()
     return args.__dict__
 
 
 def parse_args_test() -> dict:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_df_path', default='tmp/test.pkl')
-    parser.add_argument('--load_model_path', default='tmp/model.pkl')
+    parser.add_argument('--test_data_path', default='tmp/test.pkl')
+    parser.add_argument('--load_weights_path', default='tmp/weights.pkl')
     args = parser.parse_args()
     return args.__dict__
 

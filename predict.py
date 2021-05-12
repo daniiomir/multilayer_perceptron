@@ -7,7 +7,7 @@ from src.activations import ReLU
 if __name__ == '__main__':
     args = parse_args_test()
 
-    X_test, y_test = load('tmp/test.pkl')
+    X_test, y_test = load(args['test_data_path'])
 
     model = Model()
     model.add_layer(Dense(X_test.shape[1], 100))
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     model.add_layer(ReLU())
     model.add_layer(Dense(50, 2))
 
-    model.load_weights('tmp/weights.pkl')
+    model.load_weights(args['load_weights_path'])
 
     model.test_mode()
     preds = model.forward(X_test.to_numpy())

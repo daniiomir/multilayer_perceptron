@@ -11,8 +11,8 @@ if __name__ == '__main__':
     args = parse_args_train()
     seed_everything(args['seed'])
 
-    X_train, y_train = load('tmp/train.pkl')
-    X_val, y_val = load('tmp/val.pkl')
+    X_train, y_train = load(args['train_data_path'])
+    X_val, y_val = load(args['val_data_path'])
 
     model = Model()
     model.add_layer(Dense(X_train.shape[1], 100))
@@ -74,7 +74,7 @@ if __name__ == '__main__':
               end='')
 
         if check_best_model(val_acc_by_epoch, np.mean(val_acc_by_batch)):
-            model.save_weights()
+            model.save_weights(args['save_weights_path'])
             print(' | Best model! Saving weights!', end='')
 
         print('')
