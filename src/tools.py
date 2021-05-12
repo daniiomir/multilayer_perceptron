@@ -112,9 +112,8 @@ def parse_args_preprocess() -> dict:
 
 def parse_args_train() -> dict:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--save_model_path', default='tmp/model.pkl')
     parser.add_argument('--seed', default=42)
-    parser.add_argument('--epochs', default=200)
+    parser.add_argument('--epochs', default=1000)
     parser.add_argument('--batchsize', default=32)
     args = parser.parse_args()
     return args.__dict__

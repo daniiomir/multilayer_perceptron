@@ -6,7 +6,7 @@ class ReLU(Layer):
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         relu_forward = np.maximum(0, input)
         return relu_forward
 
@@ -19,7 +19,7 @@ class Tanh(Layer):
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         return (np.exp(input) - np.exp(-input)) / (np.exp(input) + np.exp(-input))
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
@@ -30,7 +30,7 @@ class Sigmoid(Layer):
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         return 1 / (1 + np.exp(-input))
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
@@ -42,7 +42,7 @@ class SoftMax(Layer):
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         assert len(input.shape) == 2
         e_x = np.exp(input - np.max(input, axis=1)[:, np.newaxis])
         div = np.sum(e_x, axis=1)[:, np.newaxis]

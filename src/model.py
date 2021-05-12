@@ -29,22 +29,22 @@ class Model:
     def forward(self, input: np.ndarray, collect_garbage=False):
         self.forward_list.append(input)
         for layer in self.network:
-            if isinstance(layer, Dropout) and not self.trainable:
-                continue
-            self.forward_list.append(layer.forward(self.forward_list[-1]))
-        if self.trainable:
-            assert len(self.forward_list) == len(self.network) + 1
+            if self.trainable:
+                self.forward_list.append(layer.forward(self.forward_list[-1], mode='train'))
+            else:
+                self.forward_list.append(layer.forward(self.forward_list[-1], mode='test'))
+        assert len(self.forward_list) == len(self.network) + 1
         pred = self.forward_list[-1]
         if not self.trainable:
             self.clear_cache(collect_garbage)
         return pred
 
-    def backward(self, layer_inputs, loss_grad):
+    def backward(self, layer_inputs: np.ndarray, loss_grad: np.ndarray):
         for layer_index in range(len(self.network))[::-1]:
             layer = self.network[layer_index]
             loss_grad = layer.backward(layer_inputs[layer_index], loss_grad)
 
-    def clear_cache(self, collect_garbage=False):
+    def clear_cache(self, collect_garbage: bool = False):
         self.forward_list.clear()
         if collect_garbage:
             for layer in self.params:

@@ -10,7 +10,7 @@ class Layer:
         self.weights_grad = None
         self.biases_grad = None
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         raise NotImplementedError
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
@@ -33,7 +33,7 @@ class Dense(Layer):
         self.require_grad = True
         self.name = name
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
         return np.dot(input, self.weights) + self.biases
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
@@ -61,9 +61,12 @@ class Dropout(Layer):
         self.p = p
         self.mask = None
 
-    def forward(self, input: np.ndarray) -> np.ndarray:
-        self.mask = np.random.binomial(1, self.p, input.shape) / self.p
-        return input * self.mask
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
+        if mode == 'train':
+            self.mask = np.random.binomial(1, self.p, input.shape) / self.p
+            return input * self.mask
+        else:
+            return input
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         return grad_output * self.mask

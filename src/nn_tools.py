@@ -3,6 +3,27 @@ import random
 import numpy as np
 
 
+class EarlyStopping:
+    def __init__(self, esr: int = 10):
+        self.esr = esr
+        self.current_esr = 0
+        self.loss_list = []
+
+    def add_loss(self, loss: float) -> None:
+        self.loss_list.append(loss)
+
+    def check_stop_training(self) -> bool:
+        if self.current_esr > self.esr:
+            print(f'Current early stopping rate bigger than {self.esr}. Stop training!')
+            return True
+        if len(self.loss_list) > 1:
+            if max(self.loss_list[:-1]) > self.loss_list[-1]:
+                self.current_esr += 1
+            else:
+                self.current_esr = 0
+        return False
+
+
 def seed_everything(seed: int = 42) -> None:
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -40,3 +61,12 @@ def clip_gradients(params: list, grad_clip: int = 3):
     for layer in params:
         layer.weights_grad = np.clip(layer.weights_grad, -grad_clip, grad_clip)
         layer.biases_grad = np.clip(layer.biases_grad, -grad_clip, grad_clip)
+
+
+def check_best_model(metric_list: list, current_metric: float) -> bool:
+    if len(metric_list) == 0:
+        return True
+    if max(metric_list) < current_metric:
+        return True
+    return False
+
