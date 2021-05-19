@@ -19,8 +19,8 @@ class SGD(Optimizer):
 
     def step(self, iter_num):
         for layer in self.model_params:
-            layer.weights += self.learning_rate * layer.weights_grad + self.weight_decay * layer.weights
-            layer.biases += self.learning_rate * layer.biases_grad + self.weight_decay * layer.biases
+            layer.weights -= self.learning_rate * layer.weights_grad + self.weight_decay * layer.weights
+            layer.biases -= self.learning_rate * layer.biases_grad + self.weight_decay * layer.biases
 
 
 class Momentum(Optimizer):

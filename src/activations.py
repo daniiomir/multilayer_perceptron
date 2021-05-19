@@ -43,7 +43,6 @@ class SoftMax(Layer):
         super().__init__()
 
     def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
-        assert len(input.shape) == 2
         e_x = np.exp(input - np.max(input, axis=1)[:, np.newaxis])
         div = np.sum(e_x, axis=1)[:, np.newaxis]
         return e_x / div

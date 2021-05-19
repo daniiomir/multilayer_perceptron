@@ -29,7 +29,7 @@ class Dense(Layer):
         super().__init__()
         self.shape = (input_units, output_units)
         self.weights = np.zeros((input_units, output_units))
-        self.biases = np.zeros(output_units)
+        self.biases = np.ones(output_units)
         self.require_grad = True
         self.name = name
 
@@ -44,8 +44,7 @@ class Dense(Layer):
         grad_input = np.dot(grad_output, self.weights.T)
 
         self.weights_grad = np.dot(input.T, grad_output)
-        self.biases_grad = np.sum(grad_output, axis=0)  # TODO
-        # self.biases_grad = grad_output.mean(axis=0) * input.shape[0]
+        self.biases_grad = grad_output.mean(axis=0)
 
         assert self.weights_grad.shape == self.weights.shape and self.biases_grad.shape == self.biases.shape
         return grad_input
@@ -56,7 +55,7 @@ class Dropout(Layer):
     "Dropout:  A Simple Way to Prevent Neural Networks from Overfitting"
     https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf
     """
-    def __init__(self, p=0.5):
+    def __init__(self, p: float = 0.5):
         super().__init__()
         self.p = p
         self.mask = None

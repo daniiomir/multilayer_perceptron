@@ -29,7 +29,13 @@
 **Другое:**
 * Инициализации весов (xavier_normal, kaiming_normal)
 * Клиппирование градиента
-* EarlyStopping
+* EarlyStopping  
+
+## В процессе добавления:
+
+* Сверточный слой
+* MaxPool
+* Batch normalization
 
 ## Установка
 >python3.8 -m venv env  
@@ -37,9 +43,7 @@
 >pip install -r requirements.txt  
 
 ## Запуск
->python preprocess.py  
->python train.py  
->python predict.py  
+>python tests/test_fcn.py
 
 ## Использованные библиотеки
 numpy>=1.20.1  

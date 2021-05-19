@@ -3,7 +3,7 @@ from src.model import Model
 
 
 class Loss:
-    def __init__(self, eps: float = 1e-15):
+    def __init__(self, eps: float = 1e-8):
         self.eps = eps
 
     def __call__(self, y_true: np.ndarray, y_pred: np.ndarray):
