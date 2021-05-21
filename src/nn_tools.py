@@ -70,3 +70,6 @@ def check_best_model(metric_list: list, current_metric: float) -> bool:
         return True
     return False
 
+
+def threshold_prediction(array: np.ndarray, thrs: float = 0.5):
+    return (array > thrs).astype(int)

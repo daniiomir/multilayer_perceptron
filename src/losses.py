@@ -24,7 +24,7 @@ class BinaryCrossEntropyLoss(Loss):
 
     def backward(self, model: Model, y_true: np.ndarray, y_pred: np.ndarray):
         y_pred = np.clip(y_pred, self.eps, 1 - self.eps)
-        loss_grad = -(y_true / y_pred) + (1 - y_true) / (1 - y_pred)
+        loss_grad = y_pred - y_true[:, np.newaxis]
         model.backward(model.forward_list, loss_grad)
 
 

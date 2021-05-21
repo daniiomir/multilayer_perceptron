@@ -1,18 +1,40 @@
+import argparse
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from src.plots import make_learning_curves
-from src.argparser import parse_args_fcn
 from src.tools import load, save, LabelEncoder, StandartScaler, most_correlated_features
-from src.nn_tools import seed_everything, init_weights, dataloader, clip_gradients, check_best_model, EarlyStopping
-from src.layers import Dense, Dropout
-from src.losses import BinaryCrossEntropyLoss, CrossEntropyLoss
-from src.activations import ReLU, Tanh, Sigmoid, SoftMax
+from src.nn_tools import seed_everything, init_weights, dataloader, check_best_model, threshold_prediction
+from src.layers import Dense
+from src.losses import BinaryCrossEntropyLoss
+from src.activations import ReLU, Sigmoid
 from src.optimizers import SGD, Momentum, RMSProp, Adam
 from src.model import Model
 
+
+def parse_args() -> dict:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seed', default=42)
+    parser.add_argument('--preprocess', default='no')
+    parser.add_argument('--learning_rate', default=0.01)
+    parser.add_argument('--epochs', default=50)
+    parser.add_argument('--esr', default=10)
+    parser.add_argument('--clip_grad', default=3.)
+    parser.add_argument('--batchsize', default=32)
+    parser.add_argument('--dataset_path', default='../data/breast_cancer_dataset.csv')
+    parser.add_argument('--test_size', default=0.33)
+    parser.add_argument('--save_weights_path', default='../tmp/weights.pkl')
+    parser.add_argument('--train_data_path', default='../tmp/train.pkl')
+    parser.add_argument('--val_data_path', default='../tmp/val.pkl')
+    parser.add_argument('--test_data_path', default='../tmp/test.pkl')
+    args = parser.parse_args()
+    return args.__dict__
+
+
 if __name__ == '__main__':
-    args = parse_args_fcn()
+    args = parse_args()
     seed_everything(args['seed'])
 
     if args['preprocess'] == 'yes':
@@ -60,21 +82,18 @@ if __name__ == '__main__':
 
     model = Model()
     model.add_layer(Dense(X_train.shape[1], 20))
-    model.add_layer(Dropout())
     model.add_layer(ReLU())
     model.add_layer(Dense(20, 50))
-    model.add_layer(Dropout())
     model.add_layer(ReLU())
     model.add_layer(Dense(50, 10))
     model.add_layer(ReLU())
-    model.add_layer(Dropout())
-    model.add_layer(Dense(10, 2))
+    model.add_layer(Dense(10, 1))
+    model.add_layer(Sigmoid())
 
     init_weights(model.params, 'kaiming_normal')
 
-    es = EarlyStopping(esr=int(args['esr']))
-    criterion = CrossEntropyLoss()
-    optimizer = Momentum(model.params, float(args['learning_rate']))
+    criterion = BinaryCrossEntropyLoss()
+    optimizer = SGD(model.params, float(args['learning_rate']))
 
     train_acc_by_epoch = []
     val_acc_by_epoch = []
@@ -95,11 +114,10 @@ if __name__ == '__main__':
                                                        shuffle=True):
             preds = model.forward(x_batch_train)
             loss = criterion(y_batch_train, preds)
-            acc = np.mean(np.argmax(preds, axis=1) == y_batch_train)
+            acc = np.mean(threshold_prediction(preds)[:, 0] == y_batch_train)
             train_loss_by_batch.append(loss)
             train_acc_by_batch.append(acc)
             criterion.backward(model, y_batch_train, preds)
-            clip_gradients(model.params, float(args['clip_grad']))
             optimizer.step(epoch + 1)
             model.clear_cache()
 
@@ -109,7 +127,7 @@ if __name__ == '__main__':
                                                    shuffle=True):
             preds = model.forward(x_batch_val)
             loss = criterion(y_batch_val, preds)
-            acc = np.mean(np.argmax(preds, axis=1) == y_batch_val)
+            acc = np.mean(threshold_prediction(preds)[:, 0] == y_batch_val)
             val_loss_by_batch.append(loss)
             val_acc_by_batch.append(acc)
 
@@ -131,11 +149,6 @@ if __name__ == '__main__':
         train_acc_by_epoch.append(np.mean(train_acc_by_batch))
         val_acc_by_epoch.append(np.mean(val_acc_by_batch))
 
-        es.add_loss(np.mean(val_acc_by_batch))
-
-        if es.check_stop_training():
-            break
-
     make_learning_curves(train_loss_by_epoch, val_loss_by_epoch, name='loss')
     make_learning_curves(train_acc_by_epoch, val_acc_by_epoch, name='accuracy')
     print(f'Best min val loss - {min(val_loss_by_epoch)} '
@@ -145,7 +158,12 @@ if __name__ == '__main__':
     print('\n' + '=' * 20)
     print('Getting metrics on test data.')
     print('=' * 20 + '\n')
+
     model.test_mode()
-    preds = model.forward(X_test.to_numpy())
-    acc = np.mean(np.argmax(preds, axis=1) == y_test)
-    print('Model accuracy on test data - ', round(acc, 4))
+    test_acc = np.mean(threshold_prediction(model.forward(X_test.to_numpy()))[:, 0] == y_test)
+    lr = LogisticRegression(random_state=args['seed']).fit(X_train, y_train)
+    mlp = MLPClassifier(random_state=args['seed'], max_iter=1000, hidden_layer_sizes=(20, 50)).fit(X_train, y_train)
+
+    print('My mlp model accuracy - ', round(test_acc, 4))
+    print('Sklearn logistic regression accuracy - ', round(np.mean(lr.predict(X_test) == y_test), 4))
+    print('Sklearn mlp accuracy - ', round(np.mean(mlp.predict(X_test) == y_test), 4))

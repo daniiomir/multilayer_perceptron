@@ -23,7 +23,7 @@ class Tanh(Layer):
         return (np.exp(input) - np.exp(-input)) / (np.exp(input) + np.exp(-input))
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
-        return 1 - self.forward(input) ** 2
+        return grad_output * (1 - self.forward(input) ** 2)
 
 
 class Sigmoid(Layer):
@@ -35,7 +35,7 @@ class Sigmoid(Layer):
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         p = self.forward(input)
-        return p * (1 - p)
+        return grad_output * (p * (1 - p))
 
 
 class SoftMax(Layer):
@@ -49,4 +49,4 @@ class SoftMax(Layer):
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         p = self.forward(input)
-        return p * (1 - p)
+        return grad_output * (p * (1 - p))

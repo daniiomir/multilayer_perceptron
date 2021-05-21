@@ -1,7 +1,6 @@
 import gc
 import numpy as np
 from src.tools import save, load
-from src.layers import Dropout
 
 
 class Model:
