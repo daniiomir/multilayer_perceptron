@@ -14,6 +14,12 @@ class Loss:
 
 
 class BinaryCrossEntropyLoss(Loss):
+    """
+    Loss for binary classification
+
+    y_pred: [0.5, ..., 0.1] | shape - (probabilities,)
+    y_true: [0.5, ..., 0.1] | shape - (probabilities,)
+    """
     def __init__(self):
         super().__init__()
 
@@ -29,20 +35,23 @@ class BinaryCrossEntropyLoss(Loss):
 
 
 class CrossEntropyLoss(Loss):
+    """
+    Loss for multiclass classification
+
+    y_true: [[0, 0, 1], [...], [...]] | one hot encoded labels | shape - (batch_size, num_classes)
+    y_pred: [[0.1, 0.3, 0.6], [...], [...]] | shape - (batch_size, num_classes)
+    """
     def __init__(self):
         super().__init__()
 
     def __call__(self, y_true: np.ndarray, y_pred: np.ndarray):
-        target = y_true[:, np.newaxis]
-        if target.shape[1] == 1:
-            target = np.append(1 - target, target, axis=1)
         output = np.clip(y_pred, self.eps, 1. - self.eps)
         output /= output.sum(axis=1)[:, np.newaxis]
-        loss = -(target * np.log(output)).sum(axis=1)
+        loss = -(y_true * np.log(output)).sum(axis=1)
         return np.mean(loss)
 
     def backward(self, model: Model, y_true: np.ndarray, y_pred: np.ndarray):
-        loss_grad = y_pred - y_true[:, np.newaxis]
+        loss_grad = y_pred - y_true
         model.backward(model.forward_list, loss_grad)
 
 

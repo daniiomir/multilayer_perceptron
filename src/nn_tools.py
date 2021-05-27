@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 
 class EarlyStopping:
@@ -73,3 +74,11 @@ def check_best_model(metric_list: list, current_metric: float) -> bool:
 
 def threshold_prediction(array: np.ndarray, thrs: float = 0.5):
     return (array > thrs).astype(int)
+
+
+def split_to_train_val_test(x, y, test_size, seed):
+    X_train_full, X_test, y_train_full, y_test = train_test_split(x, y, test_size=float(test_size),
+                                                                  random_state=int(seed))
+    X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=float(test_size),
+                                                      random_state=int(seed))
+    return X_train, y_train, X_val, y_val, X_test, y_test
