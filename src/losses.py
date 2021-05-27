@@ -57,8 +57,8 @@ class CrossEntropyLoss(Loss):
 
 class MeanSquaredErrorLoss(Loss):
     def __call__(self, y_true, y_pred):
-        return np.mean(np.square(y_pred - y_true), axis=-1)
+        return np.mean(np.square(y_pred - y_true))
 
     def backward(self, model: Model, y_true: np.ndarray, y_pred: np.ndarray):
-        loss_grad = -(y_true - y_pred)
+        loss_grad = -2 * (y_true[:, np.newaxis] - y_pred)
         model.backward(model.forward_list, loss_grad)
