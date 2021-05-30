@@ -54,7 +54,7 @@ if __name__ == '__main__':
     model.add_layer(Dense(5, 3))
     model.add_layer(SoftMax())
 
-    init_weights(model.params, 'kaiming_normal')
+    init_weights(model.params, 'kaiming_normal', 'ones')
 
     criterion = CrossEntropyLoss()
     optimizer = Momentum(model.params, float(args['learning_rate']))

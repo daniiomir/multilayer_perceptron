@@ -28,8 +28,6 @@ class Dense(Layer):
     def __init__(self, input_units: int, output_units: int, name: str = 'Dense'):
         super().__init__()
         self.shape = (input_units, output_units)
-        self.weights = np.zeros((input_units, output_units))
-        self.biases = np.ones(output_units)
         self.require_grad = True
         self.name = name
 

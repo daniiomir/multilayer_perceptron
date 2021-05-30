@@ -53,7 +53,7 @@ if __name__ == '__main__':
     model.add_layer(ReLU())
     model.add_layer(Dense(10, 1))
 
-    init_weights(model.params, 'kaiming_normal')
+    init_weights(model.params, 'kaiming_normal', 'ones')
 
     criterion = MeanSquaredErrorLoss()
     optimizer = SGD(model.params, float(args['learning_rate']))
@@ -115,5 +115,5 @@ if __name__ == '__main__':
     mlp = MLPRegressor(random_state=args['seed'], max_iter=1000, hidden_layer_sizes=(20, 20)).fit(X_train, y_train)
 
     print('My mlp model mse - ', round(mse_error, 4))
-    print('Sklearn logistic regression mse - ', round(mean_squared_error(y_test, lr.predict(X_test)), 4))
+    print('Sklearn linear regression mse - ', round(mean_squared_error(y_test, lr.predict(X_test)), 4))
     print('Sklearn mlp mse - ', round(mean_squared_error(y_test, mlp.predict(X_test)), 4))

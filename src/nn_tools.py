@@ -18,7 +18,7 @@ class EarlyStopping:
             print(f'Current early stopping rate bigger than {self.esr}. Stop training!')
             return True
         if len(self.loss_list) > 1:
-            if max(self.loss_list[:-1]) > self.loss_list[-1]:
+            if min(self.loss_list[:-1]) < self.loss_list[-1]:
                 self.current_esr += 1
             else:
                 self.current_esr = 0
@@ -44,16 +44,25 @@ def dataloader(inputs: np.ndarray, targets: np.ndarray, batchsize: int = 32,
         yield inputs[excerpt], targets[excerpt]
 
 
-def init_weights(params: list, method: str = 'xavier_normal') -> None:
+def init_weights(params: list, weights_method: str = 'xavier_normal', biases_method: str = 'zeros') -> None:
     for layer in params:
-        if method == 'zeros':
+        if weights_method == 'zeros':
             layer.weights = np.zeros(layer.shape)
-        elif method == 'normal':
+        elif weights_method == 'normal':
             layer.weights = np.random.normal(loc=0., scale=1., size=layer.shape)
-        elif method == 'xavier_normal':
+        elif weights_method == 'xavier_normal':
             layer.weights = np.random.normal(loc=0., scale=(1. / np.sqrt(layer.shape[0])), size=layer.shape)
-        elif method == 'kaiming_normal':
+        elif weights_method == 'kaiming_normal':
             layer.weights = np.random.normal(loc=0., scale=(np.sqrt(2. / layer.shape[0])), size=layer.shape)
+        else:
+            raise NotImplementedError
+
+        if biases_method == 'zeros':
+            layer.biases = np.zeros((layer.shape[1]))
+        elif biases_method == 'ones':
+            layer.biases = np.ones((layer.shape[1]))
+        elif biases_method == 'normal':
+            layer.biases = np.random.normal(loc=0., scale=1., size=layer.shape[1])
         else:
             raise NotImplementedError
 
