@@ -1,8 +1,10 @@
 import numpy as np
+from typing import Union, Tuple
 
 
 class Layer:
     def __init__(self):
+        self.shape = None
         self.require_grad = False
         self.name = None
         self.weights = None
@@ -48,6 +50,51 @@ class Dense(Layer):
         return grad_input
 
 
+class Conv2D(Layer):
+    def __init__(self,
+                 input_units: int,
+                 output_units: int,
+                 kernel: Tuple[int, int] = (3, 3),
+                 padding: Union[int, Tuple[int, int]] = 0,
+                 stride: Union[int, Tuple[int, int]] = 1,
+                 name: str = 'Conv'):
+        super().__init__()
+        self.require_grad = True
+        self.name = name
+
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
+        pass
+
+    def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
+        pass
+
+
+class MaxPooling(Layer):
+    def __init__(self,
+                 input_units: int,
+                 output_units: int,
+                 kernel: Tuple[int, int] = (3, 3)):
+        super().__init__()
+
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
+        pass
+
+    def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
+        pass
+
+
+class Flatten(Layer):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
+        self.shape = input.shape
+        return np.ravel(input).reshape(input.shape[0], -1)
+
+    def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
+        return grad_output.reshape(self.shape)
+
+
 class Dropout(Layer):
     """
     "Dropout:  A Simple Way to Prevent Neural Networks from Overfitting"
@@ -67,5 +114,3 @@ class Dropout(Layer):
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
         return grad_output * self.mask
-
-# TODO : добавить сверточный слой, MaxPooling, BatchNorm

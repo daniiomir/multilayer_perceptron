@@ -69,7 +69,7 @@ if __name__ == '__main__':
         save((X_train, y_train), args['train_data_path'])
         save((X_val, y_val), args['val_data_path'])
         save((X_test, y_test), args['test_data_path'])
-        save(encoder, '../tmp/encoder.pkl')
+        save(encoder, '../../tmp/encoder.pkl')
 
         print('\nDataset prepossessing finished.')
 

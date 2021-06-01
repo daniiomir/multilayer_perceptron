@@ -1,5 +1,6 @@
-env
+env/
 .idea
 data/mnist
-imgs
-tmp
+imgs/
+tmp/
+TODO
