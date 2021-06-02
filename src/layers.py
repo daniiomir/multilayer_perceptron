@@ -54,9 +54,9 @@ class Conv2D(Layer):
     def __init__(self,
                  input_units: int,
                  output_units: int,
-                 kernel: Tuple[int, int] = (3, 3),
-                 padding: Union[int, Tuple[int, int]] = 0,
-                 stride: Union[int, Tuple[int, int]] = 1,
+                 kernel: int = 3,
+                 padding: int = 0,
+                 stride: int = 1,
                  name: str = 'Conv'):
         super().__init__()
         self.require_grad = True
@@ -69,18 +69,58 @@ class Conv2D(Layer):
         pass
 
 
-class MaxPooling(Layer):
+class MaxPooling2D(Layer):
+    """
+    Pooling layer.
+
+    Do downsamling of input matrix by finding max elements in kernel region.
+
+    forward pass:
+        input: matrix with same width and height - shape (batch_size, channels, width, height)
+        output: formula for output matrix width and height = ((width - kernel + 2 * padding) / stride) + 1
+    """
     def __init__(self,
-                 input_units: int,
-                 output_units: int,
-                 kernel: Tuple[int, int] = (3, 3)):
+                 kernel: int = 3,
+                 stride: int = 1,
+                 padding: int = 0,
+                 padding_mode: str = 'constant'):
         super().__init__()
+        self.kernel = kernel
+        self.stride = stride
+        self.padding = padding
+        self.padding_mode = padding_mode
 
     def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
-        pass
+        assert input.shape[2] >= self.kernel and input.shape[3] >= self.kernel
+
+        if self.padding:
+            input = np.pad(input, (self.padding,), self.padding_mode)
+
+        output_shape = int((input.shape[2] - self.kernel + 2 * self.padding) / self.stride) + 1
+        output = np.zeros((input.shape[0], input.shape[1], output_shape, output_shape))
+
+        for i in range(output.shape[2]):
+            for j in range(output.shape[3]):
+                start_h = i * self.stride
+                end_h = start_h + self.kernel
+                start_w = j * self.stride
+                end_w = start_w + self.kernel
+                window = input[:, :, start_h:end_h, start_w:end_w]
+                output[:, :, i, j] = np.max(window, axis=(2, 3))
+        return output
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
-        pass
+        grad_input = np.zeros_like(input)
+        for i in range(grad_output.shape[2]):
+            for j in range(grad_output.shape[3]):
+                start_h = i * self.stride
+                end_h = start_h + self.kernel
+                start_w = j * self.stride
+                end_w = start_w + self.kernel
+                window = input[:, :, start_h:end_h, start_w:end_w]
+                mask = (window == np.max(window, axis=(2, 3)))
+                grad_input[:, :, start_h:end_h, start_w:end_w] = mask * grad_output[:, :, i, j]
+        return grad_input
 
 
 class Flatten(Layer):

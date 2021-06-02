@@ -34,7 +34,7 @@
 ## В процессе добавления:
 
 * Сверточный слой
-* Pooling (max, min, avg)
+* MaxPooling
 * Batch normalization
 
 ## Замеры точности
