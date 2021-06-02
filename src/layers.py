@@ -118,8 +118,8 @@ class MaxPooling2D(Layer):
                 start_w = j * self.stride
                 end_w = start_w + self.kernel
                 window = input[:, :, start_h:end_h, start_w:end_w]
-                mask = (window == np.max(window, axis=(2, 3)))
-                grad_input[:, :, start_h:end_h, start_w:end_w] = mask * grad_output[:, :, i, j]
+                mask = (window == np.max(window, axis=(2, 3))).astype(np.float64)
+                grad_input[:, :, start_h:end_h, start_w:end_w] += mask * grad_output[:, :, i, j]
         return grad_input
 
 

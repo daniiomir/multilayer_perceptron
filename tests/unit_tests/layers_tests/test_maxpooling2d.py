@@ -2,6 +2,8 @@ import numpy as np
 from numpy.lib.stride_tricks import as_strided
 from src.layers import MaxPooling2D
 
+# pic1_4x4_channel1 + prev_grad + after_grad
+
 pic1_4x4_channel1 = np.array([
     [
         [[0], [1], [2], [3]],
@@ -9,7 +11,48 @@ pic1_4x4_channel1 = np.array([
         [[8], [9], [10], [11]],
         [[12], [13], [14], [15]]
     ]
-])
+], dtype=np.float64)
+
+# pool2x2
+
+pool2x2_grad_pic1_4x4_channel1 = np.ones(shape=(1, 1, 3, 3))
+pool2x2_backward_result_pic1_4x4_channel1 = np.array([
+    [
+        [[0], [0], [0], [0]],
+        [[0], [1], [1], [1]],
+        [[0], [1], [1], [1]],
+        [[0], [1], [1], [1]]
+    ]
+], dtype=np.float64)
+pool2x2_backward_result_pic1_4x4_channel1 = np.moveaxis(pool2x2_backward_result_pic1_4x4_channel1, 3, 1)
+
+# pool3x3
+
+pool3x3_grad_pic1_4x4_channel1 = np.ones(shape=(1, 1, 2, 2))
+pool3x3_backward_result_pic1_4x4_channel1 = np.array([
+    [
+        [[0], [0], [0], [0]],
+        [[0], [0], [0], [0]],
+        [[0], [0], [1], [1]],
+        [[0], [0], [1], [1]]
+    ]
+], dtype=np.float64)
+pool3x3_backward_result_pic1_4x4_channel1 = np.moveaxis(pool3x3_backward_result_pic1_4x4_channel1, 3, 1)
+
+# pool4x4
+
+pool4x4_grad_pic1_4x4_channel1 = np.ones(shape=(1, 1, 1, 1))
+pool4x4_backward_result_pic1_4x4_channel1 = np.array([
+    [
+        [[0], [0], [0], [0]],
+        [[0], [0], [0], [0]],
+        [[0], [0], [0], [0]],
+        [[0], [0], [0], [1]]
+    ]
+], dtype=np.float64)
+pool4x4_backward_result_pic1_4x4_channel1 = np.moveaxis(pool4x4_backward_result_pic1_4x4_channel1, 3, 1)
+
+###########
 
 pic3_4x4_channel1 = np.array([
     [
@@ -104,6 +147,7 @@ def pool2d(A, kernel_size, stride, padding):
     return A_w.max(axis=(4, 5))
 
 
+# forward tests
 # pic1_channel1
 
 
@@ -198,3 +242,106 @@ def test_pool4x4_forward_pic3_channel3():
     result = pool.forward(pic3_4x4_channel3)
     real = pool2d(A=pic3_4x4_channel3, kernel_size=4, stride=1, padding=0)
     assert (result == real).all()
+
+
+# random arrays
+# pic1_256x256_channel3
+
+
+def test_pool2x2_forward_pic1_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 256, 256))
+    pool = MaxPooling2D(kernel=2, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=2, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool3x3_forward_pic1_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 256, 256))
+    pool = MaxPooling2D(kernel=3, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=3, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool4x4_forward_pic1_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 256, 256))
+    pool = MaxPooling2D(kernel=4, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=4, stride=1, padding=0)
+    assert (result == real).all()
+
+
+# pic3_256x256_channel3
+
+
+def test_pool2x2_forward_pic3_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(3, 3, 256, 256))
+    pool = MaxPooling2D(kernel=2, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=2, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool3x3_forward_pic3_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(3, 3, 256, 256))
+    pool = MaxPooling2D(kernel=3, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=3, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool4x4_forward_pic3_256x256_channel3():
+    pic = np.random.randint(low=0, high=255, size=(3, 3, 256, 256))
+    pool = MaxPooling2D(kernel=4, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=4, stride=1, padding=0)
+    assert (result == real).all()
+
+
+# pic1_512x512_channel3
+
+
+def test_pool2x2_forward_pic1_512x512_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 512, 512))
+    pool = MaxPooling2D(kernel=2, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=2, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool3x3_forward_pic1_512x512_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 512, 512))
+    pool = MaxPooling2D(kernel=3, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=3, stride=1, padding=0)
+    assert (result == real).all()
+
+
+def test_pool4x4_forward_pic1_512x512_channel3():
+    pic = np.random.randint(low=0, high=255, size=(1, 3, 512, 512))
+    pool = MaxPooling2D(kernel=4, stride=1, padding=0)
+    result = pool.forward(pic)
+    real = pool2d(A=pic, kernel_size=4, stride=1, padding=0)
+    assert (result == real).all()
+
+
+# backward tests
+# pic1_4x4_channel1
+
+def test_pool2x2_backward_pic1_4x4_channel1():
+    pool = MaxPooling2D(kernel=2, stride=1, padding=0)
+    result = pool.backward(pic1_4x4_channel1, pool2x2_grad_pic1_4x4_channel1)
+    assert (result == pool2x2_backward_result_pic1_4x4_channel1).all()
+
+
+def test_pool3x3_backward_pic1_4x4_channel1():
+    pool = MaxPooling2D(kernel=3, stride=1, padding=0)
+    result = pool.backward(pic1_4x4_channel1, pool3x3_grad_pic1_4x4_channel1)
+    assert (result == pool3x3_backward_result_pic1_4x4_channel1).all()
+
+
+def test_pool4x4_backward_pic1_4x4_channel1():
+    pool = MaxPooling2D(kernel=4, stride=1, padding=0)
+    result = pool.backward(pic1_4x4_channel1, pool4x4_grad_pic1_4x4_channel1)
+    assert (result == pool4x4_backward_result_pic1_4x4_channel1).all()
