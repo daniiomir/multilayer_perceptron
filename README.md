@@ -6,7 +6,9 @@
 
 ## Присутствующие блоки
 **Слои:**  
-* Полносвязный слой (Dense)  
+* Полносвязный слой (Dense)
+* MaxPooling2D
+* Flatten
 * Dropout
   
 **Активации:**  
@@ -33,8 +35,7 @@
 
 ## В процессе добавления:
 
-* Сверточный слой
-* MaxPooling
+* Conv2D
 * Batch normalization
 
 ## Замеры точности
@@ -64,6 +65,21 @@ boston | 21.0324 | 12.6515 | 11.8298 |
 >python3.8 -m venv env  
 >. ./env/activate  
 >pip install -r requirements.txt
+
+
+## Список выполненной работы
+
+* Добавлен линейный слой
+* Добавлены функции потерь MSE, BinaryCrossEntropy, CrossEntropy
+* Добавлены функции активаций Tanh, ReLU, Sigmoid, SoftMax
+* Добавлен даталоадер
+* Добавлена инициализация весов (kaiming, xavier)
+* Добавлены оптимизаторы SGD, Momentum, RMSProp, Adam
+* Добавлен инвертированый Dropout
+* Добавлен EarlyStopping
+* Добавлены тесты на датасетах boston, breast cancer, fisher's iris, MNIST
+* Добавлен слой Flatten и модульные тесты к нему
+* Добавлен слой MaxPooling2D и модульные тесты к нему
 
 ## Использованные библиотеки
 numpy>=1.20.1  
