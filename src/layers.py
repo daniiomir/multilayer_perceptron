@@ -7,6 +7,8 @@ class Layer:
         self.shape = None
         self.require_grad = False
         self.name = None
+        self.weights_shape = None
+        self.bias_shape = None
         self.weights = None
         self.biases = None
         self.weights_grad = None
@@ -29,7 +31,8 @@ class Layer:
 class Dense(Layer):
     def __init__(self, input_units: int, output_units: int, name: str = 'Dense'):
         super().__init__()
-        self.shape = (input_units, output_units)
+        self.weights_shape = (input_units, output_units)
+        self.bias_shape = (output_units,)
         self.require_grad = True
         self.name = name
 
@@ -51,22 +54,55 @@ class Dense(Layer):
 
 
 class Conv2D(Layer):
+    """
+    Convolutional layer for images.
+
+    forward pass:
+        input: matrix with same width and height - shape (batch_size, channels, width, height)
+        output: formula for output matrix width and height = ((width - kernel + 2 * padding) / stride) + 1
+    """
     def __init__(self,
-                 input_units: int,
-                 output_units: int,
-                 kernel: int = 3,
-                 padding: int = 0,
+                 input_channels: int,
+                 output_channels: int,
+                 kernel: int = 5,
                  stride: int = 1,
+                 padding: int = 0,
+                 padding_mode: str = 'constant',
                  name: str = 'Conv'):
         super().__init__()
+        self.input_channels = input_channels
+        self.output_channels = output_channels
+        self.kernel = kernel
+        self.stride = stride
+        self.padding = padding
+        self.padding_mode = padding_mode
         self.require_grad = True
         self.name = name
+        self.weights_shape = (self.output_channels, self.input_channels, self.kernel, self.kernel)
+        self.bias_shape = (self.output_channels,)
 
     def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
-        pass
+        if self.padding:
+            input = np.pad(input, (self.padding,), self.padding_mode)
+
+        output_shape = int((input.shape[2] - self.kernel + 2 * self.padding) / self.stride) + 1
+        output = np.zeros((input.shape[0], self.output_channels, output_shape, output_shape))
+
+        for i in range(output.shape[2]):
+            for j in range(output.shape[3]):
+                start_h = i * self.stride
+                end_h = start_h + self.kernel
+                start_w = j * self.stride
+                end_w = start_w + self.kernel
+                window = input[:, :, start_h:end_h, start_w:end_w]
+                output[:, :, i, j] += (np.sum(window * self.weights[np.newaxis, :, :, :]) + self.biases)
+        return output
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
-        pass
+        grad_input = ...
+        self.weights_grad = ...
+        self.biases_grad = ...
+        return grad_input
 
 
 class MaxPooling2D(Layer):
@@ -126,13 +162,14 @@ class MaxPooling2D(Layer):
 class Flatten(Layer):
     def __init__(self):
         super().__init__()
+        self.input_shape = None
 
     def forward(self, input: np.ndarray, mode: str = 'train') -> np.ndarray:
-        self.shape = input.shape
+        self.input_shape = input.shape
         return np.ravel(input).reshape(input.shape[0], -1)
 
-    def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
-        return grad_output.reshape(self.shape)
+    def backward(self, input: Union[np.ndarray, None], grad_output: np.ndarray) -> np.ndarray:
+        return grad_output.reshape(self.input_shape)
 
 
 class Dropout(Layer):

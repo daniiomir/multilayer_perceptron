@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
 from src.model import Model
-from src.layers import Dense
+from src.layers import Dense, Dropout, Conv2D, MaxPooling2D, Flatten
 from src.activations import ReLU, SoftMax
 from src.losses import CrossEntropyLoss
 from src.optimizers import SGD, Momentum, RMSProp, Adam
@@ -51,13 +51,22 @@ if __name__ == '__main__':
     y_test = encoder.transform(y_test[:, np.newaxis])
 
     model = Model()
-    model.add_layer(Dense(X_train.shape[1], 128))
+    model.add_layer(Conv2D(3, 8, kernel=5))
+    model.add_layer(MaxPooling2D(kernel=2))
+    model.add_layer(Dropout())
     model.add_layer(ReLU())
-    model.add_layer(Dense(128, 64))
+    model.add_layer(Conv2D(8, 16, kernel=5))
+    model.add_layer(MaxPooling2D(kernel=2))
+    model.add_layer(Dropout())
     model.add_layer(ReLU())
-    model.add_layer(Dense(64, 32))
+    model.add_layer(Conv2D(16, 32, kernel=5))
+    model.add_layer(MaxPooling2D(kernel=2))
+    model.add_layer(Dropout())
     model.add_layer(ReLU())
-    model.add_layer(Dense(32, 10))
+    model.add_layer(Flatten())
+    model.add_layer(Dense(..., 128))
+    model.add_layer(ReLU())
+    model.add_layer(Dense(128, 10))
     model.add_layer(SoftMax())
 
     init_weights(model.params, 'kaiming_normal', 'zeros')

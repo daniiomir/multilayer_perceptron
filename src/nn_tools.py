@@ -47,22 +47,22 @@ def dataloader(inputs: np.ndarray, targets: np.ndarray, batchsize: int = 32,
 def init_weights(params: list, weights_method: str = 'xavier_normal', biases_method: str = 'zeros') -> None:
     for layer in params:
         if weights_method == 'zeros':
-            layer.weights = np.zeros(layer.shape)
+            layer.weights = np.zeros(layer.weights_shape)
         elif weights_method == 'normal':
-            layer.weights = np.random.normal(loc=0., scale=1., size=layer.shape)
+            layer.weights = np.random.normal(loc=0., scale=1., size=layer.weights_shape)
         elif weights_method == 'xavier_normal':
-            layer.weights = np.random.normal(loc=0., scale=(1. / np.sqrt(layer.shape[0])), size=layer.shape)
+            layer.weights = np.random.normal(loc=0., scale=(1. / np.sqrt(layer.weights_shape[0])), size=layer.weights_shape)
         elif weights_method == 'kaiming_normal':
-            layer.weights = np.random.normal(loc=0., scale=(np.sqrt(2. / layer.shape[0])), size=layer.shape)
+            layer.weights = np.random.normal(loc=0., scale=(np.sqrt(2. / layer.weights_shape[0])), size=layer.weights_shape)
         else:
             raise NotImplementedError
 
         if biases_method == 'zeros':
-            layer.biases = np.zeros((layer.shape[1]))
+            layer.biases = np.zeros(layer.bias_shape)
         elif biases_method == 'ones':
-            layer.biases = np.ones((layer.shape[1]))
+            layer.biases = np.ones(layer.bias_shape)
         elif biases_method == 'normal':
-            layer.biases = np.random.normal(loc=0., scale=1., size=layer.shape[1])
+            layer.biases = np.random.normal(loc=0., scale=1., size=layer.bias_shape)
         else:
             raise NotImplementedError
 
