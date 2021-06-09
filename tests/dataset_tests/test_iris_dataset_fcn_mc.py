@@ -6,14 +6,14 @@ from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 
-from src.model import Model
-from src.layers import Dense
-from src.activations import ReLU, SoftMax
-from src.losses import CrossEntropyLoss
-from src.optimizers import SGD, Momentum, RMSProp, Adam
-from src.nn_tools import split_to_train_val_test, seed_everything, init_weights, threshold_prediction, dataloader, \
-    check_best_model, clip_gradients
-from src.plots import make_learning_curves
+from src.modules.model import Model
+from src.modules.layers import Dense
+from src.modules.activations import ReLU, SoftMax
+from src.functional.losses import CrossEntropyLoss
+from src.functional.optimizers import Momentum
+from src.utils.nn_tools import split_to_train_val_test, seed_everything, init_weights, dataloader, \
+    check_best_model
+from src.utils.plots import make_learning_curves
 
 
 def parse_args() -> dict:

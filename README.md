@@ -7,6 +7,7 @@
 ## Присутствующие блоки
 **Слои:**  
 * Полносвязный слой (Dense)
+* Conv2D
 * MaxPooling2D
 * Flatten
 * Dropout
@@ -31,11 +32,11 @@
 **Другое:**
 * Инициализации весов (xavier_normal, kaiming_normal)
 * Клиппирование градиента
-* EarlyStopping  
+* EarlyStopping
+* Метрики (не sklearn) accuracy, precision, recall, f1_score (binary/micro/macro)
 
 ## В процессе добавления:
 
-* Conv2D
 * Batch normalization
 
 ## Замеры точности
@@ -80,6 +81,8 @@ boston | 21.0324 | 12.6515 | 11.8298 |
 * Добавлены тесты на датасетах boston, breast cancer, fisher's iris, MNIST
 * Добавлен слой Flatten и модульные тесты к нему
 * Добавлен слой MaxPooling2D и модульные тесты к нему
+* Добавлен слой Conv2D
+* Добавлены метрики accuracy, precision, recall, f1 (binary/micro/macro) и модульные тесты к ним
 
 ## Использованные библиотеки
 numpy>=1.20.1  

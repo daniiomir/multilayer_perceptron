@@ -4,14 +4,14 @@ import numpy as np
 
 from sklearn.preprocessing import OneHotEncoder
 
-from src.model import Model
-from src.layers import Dense, Dropout, Conv2D, MaxPooling2D, Flatten
-from src.activations import ReLU, SoftMax
-from src.losses import CrossEntropyLoss
-from src.optimizers import SGD, Momentum, RMSProp, Adam
-from src.nn_tools import split_to_train_val_test, seed_everything, init_weights, \
-    dataloader, check_best_model, EarlyStopping
-from src.plots import make_learning_curves
+from src.modules.model import Model
+from src.modules.layers import Dense, Dropout, Conv2D, MaxPooling2D, Flatten
+from src.modules.activations import ReLU, SoftMax
+from src.functional.losses import CrossEntropyLoss
+from src.functional.optimizers import Adam
+from src.utils.nn_tools import split_to_train_val_test, seed_everything, init_weights, \
+    dataloader, check_best_model
+from src.utils.plots import make_learning_curves
 
 
 def parse_args() -> dict:

@@ -95,13 +95,27 @@ class Conv2D(Layer):
                 start_w = j * self.stride
                 end_w = start_w + self.kernel
                 window = input[:, :, start_h:end_h, start_w:end_w]
-                output[:, :, i, j] += (np.sum(window * self.weights[np.newaxis, :, :, :]) + self.biases)
+                output[:, :, i, j] += (np.sum(window * self.weights[:, :, :, :]) + self.biases)
         return output
 
     def backward(self, input: np.ndarray, grad_output: np.ndarray) -> np.ndarray:
-        grad_input = ...
-        self.weights_grad = ...
-        self.biases_grad = ...
+        grad_input = np.zeros_like(input)
+        self.weights_grad = np.zeros_like(self.weights)
+        self.biases_grad = grad_output.mean()
+        for i in range(input.shape[2]):
+            for j in range(input.shape[3]):
+                start_h = i * self.stride
+                end_h = start_h + self.kernel
+                start_w = j * self.stride
+                end_w = start_w + self.kernel
+                grad_input[:, :, start_h:end_h, start_w:end_w] += np.sum(
+                    self.weights[:, :, :, :] * grad_output[:, :, i:i+1, j:j+1],
+                    axis=4
+                )
+                self.weights_grad += np.sum(
+                    input[:, :, start_h:end_h, start_w:end_w] * grad_output[:, :, i:i+1, j:j+1],
+                    axis=0
+                )
         return grad_input
 
 

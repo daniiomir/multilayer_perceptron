@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
-from src.layers import MaxPooling2D
+from src.modules.layers import MaxPooling2D
 
 # pic1_4x4_channel1 + prev_grad + after_grad
 

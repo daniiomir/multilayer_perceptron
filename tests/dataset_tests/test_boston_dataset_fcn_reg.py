@@ -8,14 +8,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
 
-from src.model import Model
-from src.layers import Dense
-from src.activations import ReLU
-from src.losses import MeanSquaredErrorLoss
-from src.optimizers import SGD, Momentum, RMSProp, Adam
-from src.nn_tools import split_to_train_val_test, seed_everything, init_weights, threshold_prediction, dataloader, \
+from src.modules.model import Model
+from src.modules.layers import Dense
+from src.modules.activations import ReLU
+from src.functional.losses import MeanSquaredErrorLoss
+from src.functional.optimizers import SGD
+from src.utils.nn_tools import split_to_train_val_test, seed_everything, init_weights, dataloader, \
     check_best_model
-from src.plots import make_learning_curves
+from src.utils.plots import make_learning_curves
 
 
 def parse_args() -> dict:

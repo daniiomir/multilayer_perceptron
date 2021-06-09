@@ -5,14 +5,14 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 
-from src.plots import make_learning_curves
-from src.tools import load, save, LabelEncoder, StandartScaler, most_correlated_features
-from src.nn_tools import seed_everything, init_weights, dataloader, check_best_model, threshold_prediction, split_to_train_val_test
-from src.layers import Dense
-from src.losses import BinaryCrossEntropyLoss
-from src.activations import ReLU, Sigmoid
-from src.optimizers import SGD, Momentum, RMSProp, Adam
-from src.model import Model
+from src.utils.plots import make_learning_curves
+from src.utils.tools import load, save, LabelEncoder, StandartScaler, most_correlated_features
+from src.utils.nn_tools import seed_everything, init_weights, dataloader, check_best_model, threshold_prediction, split_to_train_val_test
+from src.modules.layers import Dense
+from src.functional.losses import BinaryCrossEntropyLoss
+from src.modules.activations import ReLU, Sigmoid
+from src.functional.optimizers import SGD
+from src.modules.model import Model
 
 
 def parse_args() -> dict:

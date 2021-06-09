@@ -1,5 +1,5 @@
 import numpy as np
-from src.layers import Flatten
+from src.modules.layers import Flatten
 
 
 def test_flatten_forward1():
